@@ -1196,7 +1196,7 @@ PHP_METHOD(swoole_server, __construct)
     char *serv_host;
     long sock_type = SW_SOCK_TCP;
     long serv_port;
-    long serv_mode = SW_MODE_PROCESS;
+    long serv_mode = SW_MODE_PROCESS; //默认运行模式
 
     //only cli env
     if (strcasecmp("cli", sapi_module.name) != 0)
@@ -1753,7 +1753,7 @@ PHP_METHOD(swoole_server, start)
     }
 
     swServer *serv = swoole_get_object(zobject);
-    php_swoole_register_callback(serv);
+    php_swoole_register_callback(serv); //注册回调函数
 
     if (php_sw_server_callbacks[SW_SERVER_CB_onReceive] == NULL && php_sw_server_callbacks[SW_SERVER_CB_onPacket] == NULL)
     {
@@ -1765,7 +1765,7 @@ PHP_METHOD(swoole_server, start)
     serv->ptr2 = zobject;
 
     sw_zval_add_ref(&zobject);
-    php_swoole_server_before_start(serv, zobject TSRMLS_CC);
+    php_swoole_server_before_start(serv, zobject TSRMLS_CC); //创建factory等
 
     ret = swServer_start(serv);
     if (ret < 0)
