@@ -142,7 +142,7 @@ int swManager_start(swFactory *factory)
             }
         }
         /**
-         * create user worker process
+         * create user worker process addProcess添加的进程
          */
         if (serv->user_worker_list)
         {

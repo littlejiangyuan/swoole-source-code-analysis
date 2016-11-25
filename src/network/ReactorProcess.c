@@ -29,6 +29,7 @@ static int swReactorProcess_reuse_port(swListenPort *ls);
 static uint32_t heartbeat_check_lasttime = 0;
 static void (*swReactor_onTimeout_old)(swReactor *reactor);
 
+//SW_MODE_SINGLE
 int swReactorProcess_create(swServer *serv)
 {
     serv->reactor_num = serv->worker_num;

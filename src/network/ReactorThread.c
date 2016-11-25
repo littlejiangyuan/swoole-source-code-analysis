@@ -973,7 +973,7 @@ int swReactorThread_create(swServer *serv)
         }
         ret = swFactoryProcess_create(&(serv->factory), serv->worker_num);
     }
-    else
+    else //SW_MODE_BASE,与SW_MODE_SINGLE一致
     {
         ret = swFactory_create(&(serv->factory));
     }

@@ -1217,6 +1217,7 @@ PHP_METHOD(swoole_server, __construct)
         RETURN_FALSE;
     }
 
+    //分配swServer内存
     swServer *serv = sw_malloc(sizeof (swServer));
     swServer_init(serv);
 
@@ -1567,6 +1568,7 @@ PHP_METHOD(swoole_server, set)
     RETURN_TRUE;
 }
 
+//设置回调函数
 PHP_METHOD(swoole_server, on)
 {
     zval *name;
