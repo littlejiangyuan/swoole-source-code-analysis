@@ -127,12 +127,14 @@ int swReactorProcess_start(swServer *serv)
     //task workers
     if (SwooleG.task_worker_num > 0)
     {
+    	//分配空间
         if (swServer_create_task_worker(serv) < 0)
         {
             return SW_ERR;
         }
 
         swTaskWorker_init(&SwooleGS->task_workers);
+        //创建子进程，事件循环
         swProcessPool_start(&SwooleGS->task_workers);
 
         int i;

@@ -162,7 +162,7 @@ void swHashMap_add_int(swHashMap *hmap, uint64_t key, void *data)
         swWarn("malloc failed");
         return;
     }
-    node->key_int = key;
+    node->key_int = key;//key是pid
     node->data = data;
     node->key_str = NULL;
     HASH_ADD_INT(root, key_int, node);
