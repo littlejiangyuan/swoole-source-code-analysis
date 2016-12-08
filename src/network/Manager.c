@@ -50,7 +50,7 @@ int swManager_start(swFactory *factory)
         return SW_ERR;
     }
 
-    //worker进程的pipes
+    //worker进程的pipes UNIX域套接字
     for (i = 0; i < serv->worker_num; i++)
     {
         if (swPipeUnsock_create(&object->pipes[i], 1, SOCK_DGRAM) < 0)
@@ -77,7 +77,7 @@ int swManager_start(swFactory *factory)
         for (i = 0; i < SwooleG.task_worker_num; i++)
         {
             worker = &pool->workers[i];
-            if (swWorker_create(worker) < 0)
+            if (swWorker_create(worker) < 0) //发送数据缓冲区的共享空间
             {
                 return SW_ERR;
             }
@@ -88,7 +88,7 @@ int swManager_start(swFactory *factory)
         }
     }
 
-    //User Worker Process
+    //User Worker Process 分配用户创建进程的空间
     if (serv->user_worker_num > 0)
     {
         serv->user_workers = sw_calloc(serv->user_worker_num, sizeof(swWorker *));

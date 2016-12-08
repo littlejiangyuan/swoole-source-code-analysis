@@ -74,13 +74,13 @@ static int swFactoryProcess_start(swFactory *factory)
     for (i = 0; i < serv->worker_num; i++)
     {
         worker = swServer_get_worker(serv, i);
-        if (swWorker_create(worker) < 0)
+        if (swWorker_create(worker) < 0) //创建输出共享存储区域
         {
             return SW_ERR;
         }
     }
 
-    serv->reactor_pipe_num = serv->worker_num / serv->reactor_num;
+    serv->reactor_pipe_num = serv->worker_num / serv->reactor_num; //每个reactor维持的管道数量
 
     //必须先启动manager进程组，否则会带线程fork
     if (swManager_start(factory) < 0)

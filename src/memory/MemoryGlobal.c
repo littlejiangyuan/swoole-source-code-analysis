@@ -42,7 +42,7 @@ swMemoryPool* swMemoryGlobal_new(int pagesize, char shared)
     bzero(&gm, sizeof(swMemoryGlobal));
     gm.shared = shared;
     gm.pagesize = pagesize;
-    void *first_page = swMemoryGlobal_new_page(&gm);
+    void *first_page = swMemoryGlobal_new_page(&gm);//分配具体的内存空间，把gm.mem指向待分配的内存空间
     if (first_page == NULL)
     {
         return NULL;
@@ -57,10 +57,10 @@ swMemoryPool* swMemoryGlobal_new(int pagesize, char shared)
     gm.cur_page = first_page;
 
     gm_ptr = (swMemoryGlobal *) gm.mem;
-    gm.offset += sizeof(swMemoryGlobal);
+    gm.offset += sizeof(swMemoryGlobal);//分配空间给swMemoryGlobal
 
     swMemoryPool *allocator = (swMemoryPool *) (gm.mem + gm.offset);
-    gm.offset += sizeof(swMemoryPool);
+    gm.offset += sizeof(swMemoryPool); //分配空间给swMemoryPool
 
     allocator->object = gm_ptr;
     allocator->alloc = swMemoryGlobal_alloc;

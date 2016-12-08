@@ -26,6 +26,7 @@ typedef struct _swPipeBase
     int pipes[2];
 } swPipeBase;
 
+//创建匿名管道
 int swPipeBase_create(swPipe *p, int blocking)
 {
     int ret;
@@ -59,7 +60,7 @@ int swPipeBase_create(swPipe *p, int blocking)
 static int swPipeBase_read(swPipe *p, void *data, int length)
 {
     swPipeBase *object = p->object;
-    if (p->blocking == 1 && p->timeout > 0)
+    if (p->blocking == 1 && p->timeout > 0) //如果是阻塞式
     {
         if (swSocket_wait(object->pipes[0], p->timeout * 1000, SW_EVENT_READ) < 0)
         {

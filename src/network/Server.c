@@ -84,6 +84,7 @@ void swServer_enable_accept(swReactor *reactor)
     }
 }
 
+//主线程accept连接
 int swServer_master_onAccept(swReactor *reactor, swEvent *event)
 {
     swServer *serv = reactor->ptr;
@@ -293,7 +294,7 @@ static int swServer_start_proxy(swServer *serv)
     int ret;
     swReactor *main_reactor = SwooleG.memory_pool->alloc(SwooleG.memory_pool, sizeof(swReactor));
 
-    ret = swReactor_create(main_reactor, SW_REACTOR_MAXEVENTS);
+    ret = swReactor_create(main_reactor, SW_REACTOR_MAXEVENTS);//master进程的主线程数据结构
     if (ret < 0)
     {
         swWarn("Reactor create failed");
@@ -316,7 +317,7 @@ static int swServer_start_proxy(swServer *serv)
     swListenPort *ls;
     LL_FOREACH(serv->listen_list, ls)
     {
-        if (swSocket_is_dgram(ls->type))
+        if (swSocket_is_dgram(ls->type)) //udp编程不需要listen
         {
             continue;
         }
@@ -326,7 +327,7 @@ static int swServer_start_proxy(swServer *serv)
     /**
      * create reactor thread
      */
-    ret = swReactorThread_start(serv, main_reactor);
+    ret = swReactorThread_start(serv, main_reactor); //创建serv->reactor_num个线程
     if (ret < 0)
     {
         swWarn("ReactorThread start failed");
@@ -343,7 +344,7 @@ static int swServer_start_proxy(swServer *serv)
     }
 
     /**
-     * master thread loop
+     * master thread loop 主线程循环
      */
     SwooleTG.type = SW_THREAD_MASTER;
     SwooleTG.factory_target_worker = -1;
@@ -360,7 +361,7 @@ static int swServer_start_proxy(swServer *serv)
      */
     main_reactor->id = serv->reactor_num;
     main_reactor->ptr = serv;
-    main_reactor->setHandle(main_reactor, SW_FD_LISTEN, swServer_master_onAccept);
+    main_reactor->setHandle(main_reactor, SW_FD_LISTEN, swServer_master_onAccept); //设置master主线程监听事件句柄
 
     if (serv->onStart != NULL)
     {
@@ -599,7 +600,7 @@ int swServer_start(swServer *serv)
     serv->sendwait = swServer_tcp_sendwait;
     serv->sendfile = swServer_tcp_sendfile;
 
-    serv->workers = SwooleG.memory_pool->alloc(SwooleG.memory_pool, serv->worker_num * sizeof(swWorker));
+    serv->workers = SwooleG.memory_pool->alloc(SwooleG.memory_pool, serv->worker_num * sizeof(swWorker)); //分配worker进程的内存空间
     if (serv->workers == NULL)
     {
         swoole_error_log(SW_LOG_ERROR, SW_ERROR_SYSTEM_CALL_FAIL, "gmalloc[object->workers] failed");
@@ -635,11 +636,11 @@ int swServer_start(swServer *serv)
      */
     if (SwooleG.task_worker_num > 0 && serv->worker_num > 0)
     {
-        SwooleG.task_result = sw_shm_calloc(serv->worker_num, sizeof(swEventData));
+        SwooleG.task_result = sw_shm_calloc(serv->worker_num, sizeof(swEventData));//共享内存  存储task结果
         SwooleG.task_notify = sw_calloc(serv->worker_num, sizeof(swPipe));
         for (i = 0; i < serv->worker_num; i++)
         {
-            if (swPipeNotify_auto(&SwooleG.task_notify[i], 1, 0))
+            if (swPipeNotify_auto(&SwooleG.task_notify[i], 1, 0)) //创建管道
             {
                 return SW_ERR;
             }
@@ -647,7 +648,7 @@ int swServer_start(swServer *serv)
     }
 
     /**
-     * user worker process
+     * user worker process 用户手动创建的进程
      */
     if (serv->user_worker_list)
     {
@@ -661,7 +662,7 @@ int swServer_start(swServer *serv)
     }
 
     //factory start
-    if (factory->start(factory) < 0)
+    if (factory->start(factory) < 0) //manage，work，task，user_work进程开始创建    process模式下调用swFactoryProcess_start函数
     {
         return SW_ERR;
     }
@@ -674,7 +675,7 @@ int swServer_start(swServer *serv)
     }
     else
     {
-        ret = swServer_start_proxy(serv);
+        ret = swServer_start_proxy(serv); //线程启动
     }
     swServer_free(serv);
     SwooleGS->start = 0;

@@ -1006,7 +1006,7 @@ int swReactorThread_start(swServer *serv, swReactor *main_reactor_ptr)
         {
             continue;
         }
-        main_reactor_ptr->add(main_reactor_ptr, ls->sock, SW_FD_LISTEN);
+        main_reactor_ptr->add(main_reactor_ptr, ls->sock, SW_FD_LISTEN); //添加在注册事件中
     }
 
 #ifdef HAVE_PTHREAD_BARRIER
@@ -1028,7 +1028,7 @@ int swReactorThread_start(swServer *serv, swReactor *main_reactor_ptr)
         param->object = serv;
         param->pti = i;
 
-        if (pthread_create(&pidt, NULL, (void * (*)(void *)) swReactorThread_loop, (void *) param) < 0)
+        if (pthread_create(&pidt, NULL, (void * (*)(void *)) swReactorThread_loop, (void *) param) < 0) //创建线程
         {
             swError("pthread_create[tcp_reactor] failed. Error: %s[%d]", strerror(errno), errno);
         }
